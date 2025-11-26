@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rail Compatibility Detection System - MediaPerformances</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #FFFFFF;
+            color: #000000;
+            line-height: 1.6;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Language Toggle Button */
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .lang-button {
+            background-color: #000000;
+            color: #FFFFFF;
+            border: 3px solid #000000;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .lang-button:hover {
+            background-color: #FFFFFF;
+            color: #000000;
+        }
+        
+        .lang-button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Language Display Control */
+        .lang-fr { display: block; }
+        .lang-en { display: none; }
+        
+        body.english .lang-fr { display: none; }
+        body.english .lang-en { display: block; }
+        
+        .header {
+            background-color: #000000;
+            color: #FFFFFF;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 40px;
+            border: 3px solid #000000;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            border: 2px solid #000000;
+            padding: 25px;
+        }
+        
+        .section-title {
+            background-color: #000000;
+            color: #FFFFFF;
+            padding: 15px;
+            margin: -25px -25px 20px -25px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .problem-list {
+            list-style: none;
+        }
+        
+        .problem-item {
+            margin-bottom: 25px;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .problem-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: #000000;
+            color: #FFFFFF;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .problem-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #000000;
+        }
+        
+        .metric-row:nth-child(odd) {
+            background-color: #000000;
+            color: #FFFFFF;
+        }
+        
+        .metric-label {
+            font-weight: bold;
+        }
+        
+        .deliverable-list {
+            list-style: none;
+        }
+        
+        .deliverable-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 2px solid #000000;
+            background-color: #FFFFFF;
+            color: #000000;
+        }
+        
+        .deliverable-item:before {
+            content: "✓";
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .cost-highlight {
+            background-color: #000000;
+            color: #FFFFFF;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            border: 3px solid #000000;
+        }
+        
+        .competitor-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .competitor-table th {
+            background-color: #000000;
+            color: #FFFFFF;
+            padding: 15px;
+            text-align: left;
+            border: 2px solid #000000;
+            font-size: 16px;
+        }
+        
+        .competitor-table td {
+            padding: 15px;
+            border: 2px solid #000000;
+            vertical-align: top;
+        }
+        
+        .highlight-box {
+            background-color: #000000;
+            color: #FFFFFF;
+            padding: 15px;
+            margin: 15px 0;
+            border: 3px solid #000000;
+        }
+        
+        .use-case-list {
+            list-style: none;
+        }
+        
+        .use-case-item {
+            padding: 10px;
+            border-left: 4px solid #000000;
+            margin-bottom: 8px;
+            padding-left: 15px;
+        }
+        
+        .question-box {
+            border: 3px solid #000000;
+            padding: 20px;
+            background-color: #FFFFFF;
+        }
+        
+        .question-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #000000;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .question-item:last-child {
+            border-bottom: none;
+        }
+        
+        .insight-box {
+            background-color: #FFFFFF;
+            border: 3px solid #000000;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .insight-title {
+            background-color: #000000;
+            color: #FFFFFF;
+            padding: 10px;
+            margin: -20px -20px 15px -20px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .bullet-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .bullet-list li {
+            padding: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .bullet-list li:before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        @media print {
+            .lang-toggle {
+                display: none;
+            }
+            
+            body {
+                padding: 20px;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LANGUAGE TOGGLE BUTTON -->
+    <div class="lang-toggle">
+        <button class="lang-button" onclick="toggleLanguage()">
+            <span class="lang-fr">Switch to English</span>
+            <span class="lang-en">Passer au Français</span>
+        </button>
+    </div>
+
+    <!-- HEADER - FRENCH -->
+    <div class="header lang-fr">
+        <h1>SYSTÈME DE DÉTECTION DE COMPATIBILITÉ DES RAILS</h1>
+        <p>Sameer Mohammad | 26 Novembre 2025</p>
+    </div>
+
+    <!-- HEADER - ENGLISH -->
+    <div class="header lang-en">
+        <h1>RAIL COMPATIBILITY DETECTION SYSTEM</h1>
+        <p>Sameer Mohammad | November 26, 2025</p>
+    </div>
+
+    <!-- THE 5 BUSINESS PROBLEMS - FRENCH -->
+    <div class="section lang-fr">
+        <div class="section-title">LES 5 PROBLÈMES BUSINESS RÉSOLUS PAR CET OUTIL</div>
+        
+        <ul class="problem-list">
+            <li class="problem-item">
+                <div class="problem-number">1</div>
+                <div class="problem-title">RAPIDITÉ DE QUALIFICATION</div>
+                <div>Avant : Vérification manuelle prend 30 min/magasin</div>
+                <div>Après : 21 116 magasins analysés en 11 minutes</div>
+                <div><strong>Impact :</strong> Répondre aux briefs clients le jour même</div>
+            </li>
+            
+            <li class="problem-item">
+                <div class="problem-number">2</div>
+                <div class="problem-title">DÉCOUVERTE D'INVENTAIRE CACHÉ</div>
+                <div>Avant : On ne savait pas quels magasins étaient utilisables</div>
+                <div>Après : 8 103 magasins compatibles supplémentaires trouvés</div>
+                <div><strong>Impact :</strong> Plus d'emplacements à vendre aux marques</div>
+            </li>
+            
+            <li class="problem-item">
+                <div class="problem-number">3</div>
+                <div class="problem-title">PLANIFICATION DE DÉPLOIEMENT</div>
+                <div>Avant : Aucune planification d'installation organisée</div>
+                <div>Après : Carte géographique montrant tous les magasins compatibles</div>
+                <div><strong>Impact :</strong> Les Ops peuvent planifier des déploiements régionaux</div>
+            </li>
+            
+            <li class="problem-item">
+                <div class="problem-number">4</div>
+                <div class="problem-title">EFFICACITÉ OPÉRATIONNELLE</div>
+                <div>Avant : Le travail manuel ne scale pas</div>
+                <div>Après : Dashboard avec filtres par enseigne, région, confiance</div>
+                <div><strong>Impact :</strong> Les équipes se servent sans demander de rapports</div>
+            </li>
+            
+            <li class="problem-item">
+                <div class="problem-number">5</div>
+                <div class="problem-title">AVANTAGE CONCURRENTIEL</div>
+                <div>Avant : Mêmes capacités que les concurrents</div>
+                <div>Après : Qualification des magasins par IA</div>
+                <div><strong>Impact :</strong> Capacité qu'Unlimitail, Criteo, Valiuz n'ont pas</div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- THE 5 BUSINESS PROBLEMS - ENGLISH -->
+    <div class="section lang-en">
+        <div class="section-title">THE 5 BUSINESS PROBLEMS THIS TOOL SOLVES</div>
+        
+        <ul class="problem-list">
+            <li class="problem-item">
+                <div class="problem-number">1</div>
+                <div class="problem-title">SPEED OF QUALIFICATION</div>
+                <div>Before: Manual verification takes 30 min/store</div>
+                <div>After: 21,116 stores analyzed in 11 minutes</div>
+                <div><strong>Impact:</strong> Respond to client briefs same day</div>
+            </li>
+            
+            <li class="problem-item">
+                <div class="problem-number">2</div>
+                <div class="problem-title">HIDDEN INVENTORY DISCOVERY</div>
+                <div>Before: Didn't know which stores were usable</div>
+                <div>After: Found 8,103 additional compatible stores</div>
+                <div><strong>Impact:</strong> More locations to sell to brands</div>
+            </li>
+            
+            <li class="problem-item">
+                <div class="problem-number">3</div>
+                <div class="problem-title">DEPLOYMENT PLANNING</div>
+                <div>Before: No organized installation planning</div>
+                <div>After: Geographic map showing all compatible stores</div>
+                <div><strong>Impact:</strong> Operations can plan regional deployments</div>
+            </li>
+            
+            <li class="problem-item">
+                <div class="problem-number">4</div>
+                <div class="problem-title">OPERATIONAL EFFICIENCY</div>
+                <div>Before: Manual work doesn't scale</div>
+                <div>After: Dashboard filters by chain, region, confidence</div>
+                <div><strong>Impact:</strong> Teams self-serve without requesting reports</div>
+            </li>
+            
+            <li class="problem-item">
+                <div class="problem-number">5</div>
+                <div class="problem-title">COMPETITIVE ADVANTAGE</div>
+                <div>Before: Same capabilities as competitors</div>
+                <div>After: AI-powered store qualification</div>
+                <div><strong>Impact:</strong> Capability that Unlimitail, Criteo, Valiuz don't have</div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- WHAT WAS DELIVERED - FRENCH -->
+    <div class="section lang-fr">
+        <div class="section-title">CE QUI A ÉTÉ LIVRÉ</div>
+        
+        <ul class="deliverable-list">
+            <li class="deliverable-item">Modèle IA : 90% de précision (validé avec données terrain)</li>
+            <li class="deliverable-item">Dashboard : Utilisé par les équipes Marketing + Opérations</li>
+            <li class="deliverable-item">Carte géographique : Tous les magasins tracés par compatibilité</li>
+            <li class="deliverable-item">Documentation + pipeline de réentraînement</li>
+        </ul>
+    </div>
+
+    <!-- WHAT WAS DELIVERED - ENGLISH -->
+    <div class="section lang-en">
+        <div class="section-title">WHAT WAS DELIVERED</div>
+        
+        <ul class="deliverable-list">
+            <li class="deliverable-item">AI model: 90% accuracy (validated with field data)</li>
+            <li class="deliverable-item">Dashboard: Used by Marketing + Operations teams</li>
+            <li class="deliverable-item">Geographic map: All stores plotted by compatibility</li>
+            <li class="deliverable-item">Documentation + retraining pipeline</li>
+        </ul>
+    </div>
+
+    <!-- ACTUAL COSTS - FRENCH -->
+    <div class="section lang-fr">
+        <div class="section-title">COÛTS RÉELS (PROUVABLES)</div>
+        
+        <div class="cost-highlight">
+            Cloud computing : €35
+        </div>
+        
+        <div class="metric-row">
+            <div class="metric-label">Temps de développement :</div>
+            <div>6 mois</div>
+        </div>
+        
+        <div class="metric-row">
+            <div class="metric-label">Standard industrie pour projet similaire :</div>
+            <div>€200-300 en cloud</div>
+        </div>
+    </div>
+
+    <!-- ACTUAL COSTS - ENGLISH -->
+    <div class="section lang-en">
+        <div class="section-title">ACTUAL COSTS (PROVABLE)</div>
+        
+        <div class="cost-highlight">
+            Cloud computing: €35
+        </div>
+        
+        <div class="metric-row">
+            <div class="metric-label">Development time:</div>
+            <div>6 months</div>
+        </div>
+        
+        <div class="metric-row">
+            <div class="metric-label">Industry standard for similar project:</div>
+            <div>€200-300 in cloud</div>
+        </div>
+    </div>
+
+    <!-- COMPETITIVE CONTEXT - FRENCH -->
+    <div class="section lang-fr">
+        <div class="section-title">CONTEXTE CONCURRENTIEL</div>
+        
+        <table class="competitor-table">
+            <thead>
+                <tr>
+                    <th>Concurrent</th>
+                    <th>Type</th>
+                    <th>Points Clés Business</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Unlimitail</strong></td>
+                    <td>JV Carrefour + Publicis</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>28 partenaires retailers</li>
+                            <li>Doublé en 1 an</li>
+                            <li>160M porteurs de cartes</li>
+                            <li>2 milliards pages vues/mois</li>
+                            <li>Expansion Europe (6 pays)</li>
+                            <li>Ambition géant européen</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Criteo</strong></td>
+                    <td>Plateforme Technologie</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>Équipe 8 des 12 top retailers français</li>
+                            <li>Travaille avec Leclerc, Auchan, Boulanger</li>
+                            <li>20 pays dans le monde</li>
+                            <li>Perd des clients face aux nouvelles tech</li>
+                            <li>Pression sur les marges élevées</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Valiuz</strong></td>
+                    <td>Alliance Auchan + Mousquetaires</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>27% PDM alimentaire (vs Carrefour 21,9%)</li>
+                            <li>10 000+ magasins</li>
+                            <li>6 pays européens</li>
+                            <li>360 employés</li>
+                            <li>Opérationnel janvier 2026</li>
+                            <li>100% des foyers français</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Conso Régie</strong></td>
+                    <td>E.Leclerc</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>E.Leclerc = #1 retail français (24,2% PDM)</li>
+                            <li>Créée en 2016</li>
+                            <li>Filiale 100% GALEC</li>
+                            <li>Plateforme indépendante</li>
+                            <li>Pas de dépendance Criteo</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Infinity Advertising</strong></td>
+                    <td>Maintenant partie de Valiuz</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>Origine Intermarché + Casino (2021)</li>
+                            <li>1ère alliance data retailers mondiale</li>
+                            <li>Fusionné dans Valiuz (sept 2025)</li>
+                            <li>50 employés rejoignent Valiuz</li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="highlight-box" style="margin-top: 25px;">
+            <strong>INSIGHT CRITIQUE :</strong> AUCUN n'a de qualification de magasins par IA. AUCUN ne peut analyser l'infrastructure aussi rapidement. AUCUN n'a découvert d'inventaire caché à cette échelle. C'est la capacité unique de MediaPerformances.
+        </div>
+    </div>
+
+    <!-- COMPETITIVE CONTEXT - ENGLISH -->
+    <div class="section lang-en">
+        <div class="section-title">COMPETITIVE CONTEXT</div>
+        
+        <table class="competitor-table">
+            <thead>
+                <tr>
+                    <th>Competitor</th>
+                    <th>Type</th>
+                    <th>Key Business Highlights</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Unlimitail</strong></td>
+                    <td>Carrefour + Publicis JV</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>28 retail partners</li>
+                            <li>Doubled in 1 year</li>
+                            <li>160M cardholders</li>
+                            <li>2B monthly pageviews</li>
+                            <li>Expanding across Europe (6 countries)</li>
+                            <li>European giant ambition</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Criteo</strong></td>
+                    <td>Technology Platform</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>Powers 8 of top 12 French retailers</li>
+                            <li>Works with Leclerc, Auchan, Boulanger</li>
+                            <li>20 countries globally</li>
+                            <li>Losing clients to newer tech</li>
+                            <li>High margin pressure</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Valiuz</strong></td>
+                    <td>Auchan + Mousquetaires Alliance</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>27% food market share (vs Carrefour 21.9%)</li>
+                            <li>10,000+ stores</li>
+                            <li>6 European countries</li>
+                            <li>360 employees</li>
+                            <li>Operational Jan 2026</li>
+                            <li>100% French households reach</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Conso Régie</strong></td>
+                    <td>E.Leclerc</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>E.Leclerc = #1 French retailer (24.2% share)</li>
+                            <li>Created 2016</li>
+                            <li>100% GALEC subsidiary</li>
+                            <li>Independent platform</li>
+                            <li>No Criteo dependency</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Infinity Advertising</strong></td>
+                    <td>Now part of Valiuz</td>
+                    <td>
+                        <ul class="bullet-list">
+                            <li>Originally Intermarché + Casino (2021)</li>
+                            <li>First retailer data alliance globally</li>
+                            <li>Merged into Valiuz (Sept 2025)</li>
+                            <li>50 employees joined Valiuz team</li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="highlight-box" style="margin-top: 25px;">
+            <strong>CRITICAL INSIGHT:</strong> NONE have AI-powered store qualification. NONE can analyze infrastructure this fast. NONE have discovered hidden inventory at scale. This is MediaPerformances' unique capability.
+        </div>
+    </div>
+
+    <!-- KEY INSIGHTS - FRENCH -->
+    <div class="section lang-fr">
+        <div class="section-title">INSIGHTS CLÉS POUR LES PARTIES PRENANTES</div>
+        
+        <div class="insight-box">
+            <div class="insight-title">1. LA CONSOLIDATION DU MARCHÉ S'ACCÉLÈRE</div>
+            <ul class="bullet-list">
+                <li>Unlimitail est passé de 13 à 28 partenaires en 12 mois</li>
+                <li>Valiuz a fusionné avec Infinity Advertising</li>
+                <li>Les petits acteurs sont absorbés ou perdent du terrain</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <div class="insight-title">2. L'ÉCHELLE DEVIENT CRITIQUE</div>
+            <ul class="bullet-list">
+                <li>Les gagnants ont une portée massive (160M+ porteurs de cartes)</li>
+                <li>Expansion géographique requise (6+ pays)</li>
+                <li>Les régies mono-retailer perdent leur avantage compétitif</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <div class="insight-title">3. LA TECHNOLOGIE COMPTE MAIS N'EST PAS TOUT</div>
+            <ul class="bullet-list">
+                <li>Criteo a la meilleure tech mais perd des parts de marché</li>
+                <li>Les retailers préfèrent les plateformes propriétaires malgré le coût</li>
+                <li>La complexité d'intégration favorise les solutions unifiées</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <div class="insight-title">4. AUCUN N'A DE QUALIFICATION DE MAGASINS PAR IA</div>
+            <ul class="bullet-list">
+                <li>Tous les concurrents font de la vérification manuelle OU</li>
+                <li>N'ont pas de capacité d'analyse d'infrastructure physique</li>
+                <li>Le système CV de MediaPerformances = avantage unique</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <div class="insight-title">5. POSITIONNEMENT CONCURRENTIEL</div>
+            <div style="margin-top: 15px;"><strong>MediaPerformances vs Concurrents :</strong></div>
+            <ul class="bullet-list">
+                <li>✓ Qualification plus rapide (11 min vs semaines)</li>
+                <li>✓ Découverte d'inventaire caché (8 103 magasins)</li>
+                <li>✓ Capacité IA que les concurrents n'ont pas</li>
+                <li>✗ Échelle plus petite qu'Unlimitail/Valiuz</li>
+                <li><strong>→ Se différencier par la technologie, pas la taille</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- KEY INSIGHTS - ENGLISH -->
+    <div class="section lang-en">
+        <div class="section-title">KEY INSIGHTS FOR STAKEHOLDERS</div>
+        
+        <div class="insight-box">
+            <div class="insight-title">1. MARKET CONSOLIDATION IS ACCELERATING</div>
+            <ul class="bullet-list">
+                <li>Unlimitail grew from 13 to 28 partners in 12 months</li>
+                <li>Valiuz merged with Infinity Advertising</li>
+                <li>Smaller players being absorbed or losing ground</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <div class="insight-title">2. SCALE IS BECOMING CRITICAL</div>
+            <ul class="bullet-list">
+                <li>Winners have massive reach (160M+ cardholders)</li>
+                <li>Geographic expansion required (6+ countries)</li>
+                <li>Single-retailer régies losing competitive edge</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <div class="insight-title">3. TECHNOLOGY MATTERS BUT ISN'T EVERYTHING</div>
+            <ul class="bullet-list">
+                <li>Criteo has best tech but losing market share</li>
+                <li>Retailers prefer owned platforms despite cost</li>
+                <li>Integration complexity favors unified solutions</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <div class="insight-title">4. NONE HAVE AI-POWERED STORE QUALIFICATION</div>
+            <ul class="bullet-list">
+                <li>All competitors do manual verification OR</li>
+                <li>No physical infrastructure analysis capability</li>
+                <li>MediaPerformances' CV system = unique advantage</li>
+            </ul>
+        </div>
+        
+        <div class="insight-box">
+            <div class="insight-title">5. COMPETITIVE POSITIONING</div>
+            <div style="margin-top: 15px;"><strong>MediaPerformances vs Competitors:</strong></div>
+            <ul class="bullet-list">
+                <li>✓ Faster qualification (11 min vs weeks)</li>
+                <li>✓ Hidden inventory discovery (8,103 stores)</li>
+                <li>✓ AI capability competitors don't have</li>
+                <li>✗ Smaller scale than Unlimitail/Valiuz</li>
+                <li><strong>→ Need to differentiate on technology, not size</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- REUSABLE INFRASTRUCTURE - FRENCH -->
+    <div class="section lang-fr">
+        <div class="section-title">CE SYSTÈME PEUT AUSSI QUALIFIER</div>
+        
+        <ul class="use-case-list">
+            <li class="use-case-item">Placement d'affichages en rayon</li>
+            <li class="use-case-item">Emplacements d'écrans digitaux</li>
+            <li class="use-case-item">Compatibilité d'affichages d'entrée</li>
+            <li class="use-case-item">Conformité planogramme</li>
+            <li class="use-case-item">Toute vérification d'équipement visuel</li>
+        </ul>
+        
+        <div class="highlight-box" style="margin-top: 20px;">
+            Même infrastructure, données d'entraînement différentes<br>
+            <strong>Prochain use case : 2-3 mois (pas 6)</strong>
+        </div>
+    </div>
+
+    <!-- REUSABLE INFRASTRUCTURE - ENGLISH -->
+    <div class="section lang-en">
+        <div class="section-title">THIS SYSTEM CAN ALSO QUALIFY</div>
+        
+        <ul class="use-case-list">
+            <li class="use-case-item">Shelf displays placement</li>
+            <li class="use-case-item">Digital screen locations</li>
+            <li class="use-case-item">Entrance display compatibility</li>
+            <li class="use-case-item">Planogram compliance</li>
+            <li class="use-case-item">Any visual equipment verification</li>
+        </ul>
+        
+        <div class="highlight-box" style="margin-top: 20px;">
+            Same infrastructure, different training data<br>
+            <strong>Next use case: 2-3 months (not 6)</strong>
+        </div>
+    </div>
+
+    <!-- DISCUSSION QUESTIONS - FRENCH -->
+    <div class="section lang-fr">
+        <div class="section-title">QUESTIONS DE DISCUSSION</div>
+        
+        <div class="question-box">
+            <div class="question-item">1. Quel use case devons-nous prioriser ensuite ?</div>
+            <div class="question-item">2. Quels défis business nécessitent une qualification visuelle ?</div>
+            <div class="question-item">3. Comment scaler cet avantage compétitif ?</div>
+            <div class="question-item">4. Gardons-nous cette capacité en interne ?</div>
+        </div>
+    </div>
+
+    <!-- DISCUSSION QUESTIONS - ENGLISH -->
+    <div class="section lang-en">
+        <div class="section-title">DISCUSSION QUESTIONS</div>
+        
+        <div class="question-box">
+            <div class="question-item">1. Which use case should we prioritize next?</div>
+            <div class="question-item">2. What business challenges need visual qualification?</div>
+            <div class="question-item">3. How do we scale this competitive advantage?</div>
+            <div class="question-item">4. Do we keep this capability in-house?</div>
+        </div>
+    </div>
+
+    <!-- REFERENCE LINKS - FRENCH -->
+    <div class="section lang-fr">
+        <div class="section-title">LIENS DE RÉFÉRENCE - INFORMATIONS CONCURRENTS</div>
+        
+        <div style="margin-bottom: 20px;">
+            <strong>Unlimitail (28 partenaires) :</strong><br>
+            <a href="https://www.unlimitail.com/news/unlimitail-celebrates-its-first-anniversary-with-now-28-retail-partners-at-its-side" style="color: #000000;">Annonce officielle anniversaire</a>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <strong>Criteo (Plateforme Technologie) :</strong><br>
+            <a href="https://www.influencia.net/2021/11/le-retail-media-au-coeur-de-la-transformation-de-criteo/" style="color: #000000;">Interview Influencia</a>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <strong>Valiuz (Auchan + Mousquetaires) :</strong><br>
+            <a href="https://www.valiuz.com/en/post/valiuz-and-infinity-advertising-join-forces-to-create-the-european-leader-in-retail-media" style="color: #000000;">Annonce officielle alliance</a>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <strong>Conso Régie (E.Leclerc) :</strong><br>
+            <a href="https://www.recrutement.leclerc/societes/conso-regie/" style="color: #000000;">Page officielle Leclerc</a>
+        </div>
+    </div>
+
+    <!-- REFERENCE LINKS - ENGLISH -->
+    <div class="section lang-en">
+        <div class="section-title">REFERENCE LINKS - COMPETITOR INFORMATION</div>
+        
+        <div style="margin-bottom: 20px;">
+            <strong>Unlimitail (28 partners):</strong><br>
+            <a href="https://www.unlimitail.com/news/unlimitail-celebrates-its-first-anniversary-with-now-28-retail-partners-at-its-side" style="color: #000000;">Official Anniversary Announcement</a>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <strong>Criteo (Technology Platform):</strong><br>
+            <a href="https://www.influencia.net/2021/11/le-retail-media-au-coeur-de-la-transformation-de-criteo/" style="color: #000000;">Influencia Interview</a>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <strong>Valiuz (Auchan + Mousquetaires):</strong><br>
+            <a href="https://www.valiuz.com/en/post/valiuz-and-infinity-advertising-join-forces-to-create-the-european-leader-in-retail-media" style="color: #000000;">Official Alliance Announcement</a>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <strong>Conso Régie (E.Leclerc):</strong><br>
+            <a href="https://www.recrutement.leclerc/societes/conso-regie/" style="color: #000000;">Official Leclerc Page</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleLanguage() {
+            document.body.classList.toggle('english');
+        }
+    </script>
+
+</body>
+</html>
